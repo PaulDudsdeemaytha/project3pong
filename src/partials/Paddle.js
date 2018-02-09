@@ -8,7 +8,7 @@ export default class Paddle {
       this.height = height;
       this.x = x;
       this.y = y;
-      this.speed = 10;
+      this.speed = 25;
       this.score = 0;
       //KeyListener, ask about why a and z arent part of the switch method
       document.addEventListener('keydown', event => {
@@ -32,6 +32,14 @@ export default class Paddle {
     down(){
         console.log(this.y);
         this.y = Math.min(this.y + this.speed, this.boardHeight - this.height);
+    }
+
+    coordinates(x, y, width, height) {
+        let leftX = x;
+        let rightX = x + width;
+        let topY = y;
+        let bottomY = y + height;
+        return [leftX, rightX, topY, bottomY];
     }
 
     //Rendering
