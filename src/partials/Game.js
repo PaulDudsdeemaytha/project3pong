@@ -14,7 +14,7 @@ export default class Game {
 		// Other code goes here...
 		this.board = new Board(this.width, this.height);
 		//changing ball size
-		this.ball = new Ball(3, this.width, this.height);
+		this.ball = new Ball(15, this.width, this.height);
 
 		this.paddleWidth = 8;
 		this.paddleHeight = 56;

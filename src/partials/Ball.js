@@ -6,7 +6,7 @@ export default class Ball {
       this.boardWidth = boardWidth;
       this.boardHeight = boardHeight;
       this.direction = 1;
-
+      this.ping = new Audio('public/sounds/pong-01.wav');
       this.reset() 
 
     //   document.addEventListener('keydown', event => {
@@ -26,7 +26,7 @@ export default class Ball {
         while(this.vy === 0){
         this.vy = Math.floor(Math.random() * 10 - 5);
         }
-        this.vx = this.direction * (10 - Math.abs(this.vy));
+        this.vx = this.direction * (6 - Math.abs(this.vy));
       }
 
     goal(player){
@@ -47,6 +47,7 @@ export default class Ball {
         } else if (hitLeft || hitRight){
             // this.reset();
             this.vx = -this.vx;
+            this.ping.play()
         }
     }
 
@@ -63,6 +64,8 @@ export default class Ball {
                 {
                     this.vx = - this.vx;
                     //add sound
+                    this.ping.play();
+
                 }
              } else {
                 let paddle = player1.coordinates(player1.x, player1.y, player1.width, player1.height);
@@ -76,6 +79,7 @@ export default class Ball {
                 {
                     this.vx = -this.vx;
                     // add sound
+                    this.ping.play();
                 }
             }
         }
