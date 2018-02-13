@@ -25,21 +25,19 @@ export default class Paddle {
 
     //Methods on making the paddles move vertically
     up(){
-        console.log(this.y);
         this.y = Math.max(this.y - this.speed, 0);
     }
     
     down(){
-        console.log(this.y);
         this.y = Math.min(this.y + this.speed, this.boardHeight - this.height);
     }
 
     nitro(){
-      this.speed = 20;
+      this.speed = 10;
     }
 
     slow() {
-      this.speed = 1; 
+      this.speed = 3; 
     }
 
     defaultSpeed(){
@@ -56,7 +54,7 @@ export default class Paddle {
 
     //Rendering
     render(svg){
-        // Player movement
+   // Player movement
     if (this.keyState['a'] && this.player === 'player1') {
         this.up();
       }
@@ -69,7 +67,8 @@ export default class Paddle {
       if (this.keyState['ArrowDown'] && this.player === 'player2') {
         this.down();
       }
-      //speedcontrol for players
+
+      //Speed control for players
       if (this.keyState['q'] && this.player === 'player1') {
         this.slow();
       }
@@ -88,7 +87,6 @@ export default class Paddle {
       if (this.keyState['ArrowRight'] && this.player === 'player2') {
         this.nitro();
       }
-      
       //speedcontrol ends
 
         let rect = document.createElementNS(SVG_NS, 'rect');

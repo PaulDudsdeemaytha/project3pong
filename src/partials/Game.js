@@ -11,13 +11,12 @@ export default class Game {
 		this.width = width;
 		this.height = height;
 		this.gameElement = document.getElementById(this.element);
-		// Other code goes here...
 		this.board = new Board(this.width, this.height);
 		//changing ball size
 		this.ball = new Ball(15, this.width, this.height);
 
 		this.paddleWidth = 8;
-		this.paddleHeight = 56;
+		this.paddleHeight = 80;
 		this.boardGap = 10;
 		//Instantiate Player 1 
 		this.player1 = new Paddle(
@@ -50,10 +49,10 @@ export default class Game {
 			case KEYS.spaceBar:
 			this.pause = !this.pause;
 			break;
-		  }
+		}
 		});
 		//Score keeping
-		this.score1 = new Score(this.width/2 -200, 130, 60) //ADJUSTHIGN THE SCORE
+		this.score1 = new Score(this.width/2 -200, 130, 60)
 		this.score2 = new Score(this.width/2 +200, 130, 60)
 	} // Constructor ends
 
@@ -62,7 +61,6 @@ export default class Game {
         if(this.pause){
             return;
         }
-		// More code goes here...
 		this.gameElement.innerHTML = '';
 		let svg = document.createElementNS(SVG_NS, 'svg');
 		svg.setAttributeNS(null, 'width', this.width);
@@ -79,7 +77,7 @@ export default class Game {
 		this.score1.render(svg, this.player1.score);
 		this.score2.render(svg, this.player2.score);
 
-		//Shorten paddle as score gets higher
+		//Shorten paddle as score gets higher for each player
 		if(this.player1.score > 1){
 			this.player1.height = this.paddleHeight - 10;
 		}  
@@ -106,6 +104,7 @@ export default class Game {
 			this.player2.score = 0;
 			this.player1win.render(svg, 'Man you good!');
 			this.pause = true;
+			//creating new game
 			this.player1 = new Paddle(
 				this.height,
 				this.paddleWidth,
@@ -131,6 +130,7 @@ export default class Game {
 			this.player2.score = 0;
 			this.player2win.render(svg, 'My dude!');
 			this.pause = true;
+			//creating a new game
 			this.player1 = new Paddle(
 				this.height,
 				this.paddleWidth,

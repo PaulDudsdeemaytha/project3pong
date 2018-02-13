@@ -10,14 +10,6 @@ export default class Ball {
       this.ping2 = new Audio('public/sounds/bighead.wav');
       this.score = new Audio('public/sounds/morty.wav')
       this.reset() 
-
-    //   document.addEventListener('keydown', event => {
-    //     switch(event.key){
-    //     case KEYS.spacebar:
-    //     this.pause = !this.pause;
-    //     break;
-    //   }
-    // });
     }//constructor ends
     reset() {
         this.x = this.boardWidth / 2;
@@ -28,14 +20,12 @@ export default class Ball {
         while(this.vy === 0){
         this.vy = Math.floor(Math.random() * 10 - 5);
         }
-        this.vx = this.direction * (10 - Math.abs(this.vy));
+        this.vx = this.direction * (14 - Math.abs(this.vy));
       }
 
     goal(player){
         player.score++;
         this.reset()
-        console.log(player.score);
-
     }
 
     wallCollision(){
