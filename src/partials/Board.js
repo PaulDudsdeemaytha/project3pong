@@ -8,11 +8,11 @@ export default class Board {
     }
     render(svg) {
       // Drawing the Board
-        
         let rect = document.createElementNS(SVG_NS, 'rect');
         rect.setAttributeNS(null, 'fill', '#353535');
         rect.setAttributeNS(null, 'height', this.height);
         rect.setAttributeNS(null, 'width', this.width);
+
       // Drawing out the lines and center line
         let line = document.createElementNS(SVG_NS, 'line');
         line.setAttributeNS(null, 'x1', (this.width/2));
@@ -20,8 +20,9 @@ export default class Board {
         line.setAttributeNS(null, 'x2', (this.width/2));
         line.setAttributeNS(null, 'y2', this.height);
         line.setAttributeNS(null, 'stroke', 'white');
-        line.setAttributeNS(null, 'stroke-width', '4');
+        line.setAttributeNS(null, 'stroke-width', '4', 'black');
         line.setAttributeNS(null, 'stroke-dasharray', '20, 15')
+        // line.setAttributeNS()   
 
         svg.appendChild(rect);
         svg.appendChild(line);

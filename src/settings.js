@@ -6,4 +6,11 @@ export const KEYS = {
     up: 'ArrowUp',       // player 2 up key
     down: 'ArrowDown',     // player 2 down key
     spaceBar: ' ', // pause the game
+    //speed control
+    w: 'w',
+    e: 'e',
+    q: 'q',
+    shift: 'Shift', 
+    left: 'ArrowLeft',
+    right: 'ArrowRight',
   }

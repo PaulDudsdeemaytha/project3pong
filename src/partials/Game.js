@@ -28,6 +28,7 @@ export default class Game {
 			((this.height - this.paddleHeight) / 2),
 			KEYS.a,
 			KEYS.z,
+			'player1'
 		);
 		//Instantiate Player 2
 		this.player2 = new Paddle(
@@ -38,7 +39,12 @@ export default class Game {
 			((this.height - this.paddleHeight) / 2),
 			KEYS.up,
 			KEYS.down,
+			'player2'
 		);
+
+		this.player1win = new Score(75, 50, 30, 'red');
+		this.player2win = new Score(525, 50, 30, 'blue');
+
 		document.addEventListener('keydown', event => {
 			switch(event.key){
 			case KEYS.spaceBar:
@@ -47,8 +53,8 @@ export default class Game {
 		  }
 		});
 		//Score keeping
-		this.score1 = new Score(this.width/2 -50, 30, 30)
-		this.score2 = new Score(this.width/2 +25, 30, 30)
+		this.score1 = new Score(this.width/2 -200, 130, 60) //ADJUSTHIGN THE SCORE
+		this.score2 = new Score(this.width/2 +200, 130, 60)
 	} // Constructor ends
 
 	render() {
@@ -72,6 +78,81 @@ export default class Game {
 		//score board
 		this.score1.render(svg, this.player1.score);
 		this.score2.render(svg, this.player2.score);
+
+		//Shorten paddle as score gets higher
+		if(this.player1.score > 1){
+			this.player1.height = this.paddleHeight - 10;
+		}  
+		if (this.player1.score > 2){
+			this.player1.height = this.paddleHeight - 15;
+		}  
+		if (this.player1.score > 3){
+			this.player1.height = this.paddleHeight - 20;
+		}
+		
+		if(this.player2.score > 1){
+			this.player2.height = this.paddleHeight - 10;
+		}  
+		if (this.player2.score > 2){
+			this.player2.height = this.paddleHeight - 15;
+		} 
+		if (this.player2.score > 3){
+			this.player2.height = this.paddleHeight - 20;
+		}
+		
+		//declares winner once score reaches to 5
+		if (this.player1.score === 5){
+			this.player1.score = 0;
+			this.player2.score = 0;
+			this.player1win.render(svg, 'Man you good!');
+			this.pause = true;
+			this.player1 = new Paddle(
+				this.height,
+				this.paddleWidth,
+				this.paddleHeight,
+				this.boardGap,
+				((this.height - this.paddleHeight) / 2),
+				KEYS.a,
+				KEYS.z,
+				'player1'
+			)
+			this.player2 = new Paddle(
+				this.height,
+			this.paddleWidth,
+			this.paddleHeight,
+			(this.width - this.boardGap - this.paddleWidth),
+			((this.height - this.paddleHeight) / 2),
+			KEYS.up,
+			KEYS.down,
+			'player2'
+			)
+		} else if (this.player2.score === 5){
+			this.player1.score = 0;
+			this.player2.score = 0;
+			this.player2win.render(svg, 'My dude!');
+			this.pause = true;
+			this.player1 = new Paddle(
+				this.height,
+				this.paddleWidth,
+				this.paddleHeight,
+				this.boardGap,
+				((this.height - this.paddleHeight) / 2),
+				KEYS.a,
+				KEYS.z,
+				'player1'
+			)
+			this.player2 = new Paddle(
+				this.height,
+			this.paddleWidth,
+			this.paddleHeight,
+			(this.width - this.boardGap - this.paddleWidth),
+			((this.height - this.paddleHeight) / 2),
+			KEYS.up,
+			KEYS.down,
+			'player2'
+			)
+			
+		}
 	}
 
 }
