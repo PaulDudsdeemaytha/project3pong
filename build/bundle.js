@@ -83,7 +83,15 @@ var KEYS = exports.KEYS = {
     z: 'z', // player 1 down key
     up: 'ArrowUp', // player 2 up key
     down: 'ArrowDown', // player 2 down key
-    spaceBar: ' ' // pause the game
+    spaceBar: ' ', // pause the game
+    //speed control for player 1 -- slow, normal, fast
+    q: 'q',
+    w: 'w',
+    e: 'e',
+    //speed control for player 2 -- slow , normal, fast
+    left: 'ArrowLeft',
+    shift: 'Shift',
+    right: 'ArrowRight'
 };
 
 /***/ }),
@@ -137,18 +145,21 @@ var Game = function () {
 		this.width = width;
 		this.height = height;
 		this.gameElement = document.getElementById(this.element);
-		// Other code goes here...
 		this.board = new _Board2.default(this.width, this.height);
 		//changing ball size
 		this.ball = new _Ball2.default(15, this.width, this.height);
 
 		this.paddleWidth = 8;
-		this.paddleHeight = 56;
+		this.paddleHeight = 80;
 		this.boardGap = 10;
 		//Instantiate Player 1 
 		this.player1 = new _Paddle2.default(this.height, this.paddleWidth, this.paddleHeight, this.boardGap, (this.height - this.paddleHeight) / 2, _settings.KEYS.a, _settings.KEYS.z, 'player1');
 		//Instantiate Player 2
 		this.player2 = new _Paddle2.default(this.height, this.paddleWidth, this.paddleHeight, this.width - this.boardGap - this.paddleWidth, (this.height - this.paddleHeight) / 2, _settings.KEYS.up, _settings.KEYS.down, 'player2');
+
+		this.player1win = new _Score2.default(75, 50, 30, 'red');
+		this.player2win = new _Score2.default(525, 50, 30, 'blue');
+
 		document.addEventListener('keydown', function (event) {
 			switch (event.key) {
 				case _settings.KEYS.spaceBar:
@@ -157,8 +168,8 @@ var Game = function () {
 			}
 		});
 		//Score keeping
-		this.score1 = new _Score2.default(this.width / 2 - 50, 30, 30);
-		this.score2 = new _Score2.default(this.width / 2 + 25, 30, 30);
+		this.score1 = new _Score2.default(this.width / 2 - 200, 130, 60);
+		this.score2 = new _Score2.default(this.width / 2 + 200, 130, 60);
 	} // Constructor ends
 
 	_createClass(Game, [{
@@ -168,7 +179,6 @@ var Game = function () {
 			if (this.pause) {
 				return;
 			}
-			// More code goes here...
 			this.gameElement.innerHTML = '';
 			var svg = document.createElementNS(_settings.SVG_NS, 'svg');
 			svg.setAttributeNS(null, 'width', this.width);
@@ -184,6 +194,46 @@ var Game = function () {
 			//score board
 			this.score1.render(svg, this.player1.score);
 			this.score2.render(svg, this.player2.score);
+
+			//Shorten paddle as score gets higher for each player
+			if (this.player1.score > 1) {
+				this.player1.height = this.paddleHeight - 10;
+			}
+			if (this.player1.score > 2) {
+				this.player1.height = this.paddleHeight - 15;
+			}
+			if (this.player1.score > 3) {
+				this.player1.height = this.paddleHeight - 20;
+			}
+
+			if (this.player2.score > 1) {
+				this.player2.height = this.paddleHeight - 10;
+			}
+			if (this.player2.score > 2) {
+				this.player2.height = this.paddleHeight - 15;
+			}
+			if (this.player2.score > 3) {
+				this.player2.height = this.paddleHeight - 20;
+			}
+
+			//declares winner once score reaches to 5
+			if (this.player1.score === 5) {
+				this.player1.score = 0;
+				this.player2.score = 0;
+				this.player1win.render(svg, 'Man you good!');
+				this.pause = true;
+				//creating new game
+				this.player1 = new _Paddle2.default(this.height, this.paddleWidth, this.paddleHeight, this.boardGap, (this.height - this.paddleHeight) / 2, _settings.KEYS.a, _settings.KEYS.z, 'player1');
+				this.player2 = new _Paddle2.default(this.height, this.paddleWidth, this.paddleHeight, this.width - this.boardGap - this.paddleWidth, (this.height - this.paddleHeight) / 2, _settings.KEYS.up, _settings.KEYS.down, 'player2');
+			} else if (this.player2.score === 5) {
+				this.player1.score = 0;
+				this.player2.score = 0;
+				this.player2win.render(svg, 'My dude!');
+				this.pause = true;
+				//creating a new game
+				this.player1 = new _Paddle2.default(this.height, this.paddleWidth, this.paddleHeight, this.boardGap, (this.height - this.paddleHeight) / 2, _settings.KEYS.a, _settings.KEYS.z, 'player1');
+				this.player2 = new _Paddle2.default(this.height, this.paddleWidth, this.paddleHeight, this.width - this.boardGap - this.paddleWidth, (this.height - this.paddleHeight) / 2, _settings.KEYS.up, _settings.KEYS.down, 'player2');
+			}
 		}
 	}]);
 
@@ -234,11 +284,10 @@ var _Game2 = _interopRequireDefault(_Game);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // create a game instance
-var game = new _Game2.default('game', 512, 256);
+var game = new _Game2.default('game', 800, 256);
 
 (function gameLoop() {
     game.render();
-    // console.log('something');
     requestAnimationFrame(gameLoop);
 })();
 
@@ -269,16 +318,10 @@ var Ball = function () {
         this.boardWidth = boardWidth;
         this.boardHeight = boardHeight;
         this.direction = 1;
-        this.ping = new Audio('public/sounds/pong-01.wav');
+        this.ping = new Audio('public/sounds/rick.wav');
+        this.ping2 = new Audio('public/sounds/bighead.wav');
+        this.score = new Audio('public/sounds/morty.wav');
         this.reset();
-
-        //   document.addEventListener('keydown', event => {
-        //     switch(event.key){
-        //     case KEYS.spacebar:
-        //     this.pause = !this.pause;
-        //     break;
-        //   }
-        // });
     } //constructor ends
 
 
@@ -293,14 +336,13 @@ var Ball = function () {
             while (this.vy === 0) {
                 this.vy = Math.floor(Math.random() * 10 - 5);
             }
-            this.vx = this.direction * (6 - Math.abs(this.vy));
+            this.vx = this.direction * (14 - Math.abs(this.vy));
         }
     }, {
         key: 'goal',
         value: function goal(player) {
             player.score++;
             this.reset();
-            console.log(player.score);
         }
     }, {
         key: 'wallCollision',
@@ -315,7 +357,7 @@ var Ball = function () {
             } else if (hitLeft || hitRight) {
                 // this.reset();
                 this.vx = -this.vx;
-                this.ping.play();
+                this.score.play();
             }
         }
     }, {
@@ -336,7 +378,7 @@ var Ball = function () {
                 ) {
                         this.vx = -this.vx;
                         //add sound
-                        this.ping.play();
+                        this.ping2.play();
                     }
             } else {
                 var _paddle2 = player1.coordinates(player1.x, player1.y, player1.width, player1.height);
@@ -419,11 +461,11 @@ var Board = function () {
     key: 'render',
     value: function render(svg) {
       // Drawing the Board
-
       var rect = document.createElementNS(_settings.SVG_NS, 'rect');
       rect.setAttributeNS(null, 'fill', '#353535');
       rect.setAttributeNS(null, 'height', this.height);
       rect.setAttributeNS(null, 'width', this.width);
+
       // Drawing out the lines and center line
       var line = document.createElementNS(_settings.SVG_NS, 'line');
       line.setAttributeNS(null, 'x1', this.width / 2);
@@ -431,8 +473,7 @@ var Board = function () {
       line.setAttributeNS(null, 'x2', this.width / 2);
       line.setAttributeNS(null, 'y2', this.height);
       line.setAttributeNS(null, 'stroke', 'white');
-      line.setAttributeNS(null, 'stroke-width', '4');
-      line.setAttributeNS(null, 'stroke-dasharray', '20, 15');
+      line.setAttributeNS(null, 'stroke-width', '4', 'black');
 
       svg.appendChild(rect);
       svg.appendChild(line);
@@ -472,7 +513,7 @@ var Paddle = function () {
     this.height = height;
     this.x = x;
     this.y = y;
-    this.speed = 25;
+    this.speed = 5;
     this.score = 0;
     //KeyListener, ask about why a and z arent part of the switch method
 
@@ -484,16 +525,6 @@ var Paddle = function () {
     document.addEventListener('keyup', function (event) {
       _this.keyState[event.key || event.which] = false;
     }, true);
-    //   document.addEventListener('keydown', event => {
-    //     switch (event.key) {
-    //         case up:
-    //           this.up();
-    //           break;
-    //         case down:
-    //           this.down();
-    //           break;
-    //       }
-    //   });
   } //constructor ends
 
   //Methods on making the paddles move vertically
@@ -502,14 +533,27 @@ var Paddle = function () {
   _createClass(Paddle, [{
     key: 'up',
     value: function up() {
-      console.log(this.y);
       this.y = Math.max(this.y - this.speed, 0);
     }
   }, {
     key: 'down',
     value: function down() {
-      console.log(this.y);
       this.y = Math.min(this.y + this.speed, this.boardHeight - this.height);
+    }
+  }, {
+    key: 'nitro',
+    value: function nitro() {
+      this.speed = 10;
+    }
+  }, {
+    key: 'slow',
+    value: function slow() {
+      this.speed = 3;
+    }
+  }, {
+    key: 'defaultSpeed',
+    value: function defaultSpeed() {
+      this.speed = 5;
     }
   }, {
     key: 'coordinates',
@@ -539,6 +583,27 @@ var Paddle = function () {
       if (this.keyState['ArrowDown'] && this.player === 'player2') {
         this.down();
       }
+
+      //Speed control for players
+      if (this.keyState['q'] && this.player === 'player1') {
+        this.slow();
+      }
+      if (this.keyState['w'] && this.player === 'player1') {
+        this.defaultSpeed();
+      }
+      if (this.keyState['e'] && this.player === 'player1') {
+        this.nitro();
+      }
+      if (this.keyState['ArrowLeft'] && this.player === 'player2') {
+        this.slow();
+      }
+      if (this.keyState['Shift'] && this.player === 'player2') {
+        this.defaultSpeed();
+      }
+      if (this.keyState['ArrowRight'] && this.player === 'player2') {
+        this.nitro();
+      }
+      //speedcontrol ends
 
       var rect = document.createElementNS(_settings.SVG_NS, 'rect');
       rect.setAttributeNS(null, 'fill', 'white');
@@ -581,8 +646,6 @@ var Score = function () {
         this.y = y;
         this.size = size;
     }
-    //...
-
 
     _createClass(Score, [{
         key: 'render',
@@ -612,7 +675,7 @@ exports = module.exports = __webpack_require__(10)();
 
 
 // module
-exports.push([module.i, "/* http://meyerweb.com/eric/tools/css/reset/ \n   v2.0 | 20110126\n   License: none (public domain)\n*/\n\nhtml, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed, \nfigure, figcaption, footer, header, hgroup, \nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n\tmargin: 0;\n\tpadding: 0;\n\tborder: 0;\n\tfont-size: 100%;\n\tfont: inherit;\n\tvertical-align: baseline;\n}\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure, \nfooter, header, hgroup, menu, nav, section {\n\tdisplay: block;\n}\nbody {\n\tline-height: 1;\n}\nol, ul {\n\tlist-style: none;\n}\nblockquote, q {\n\tquotes: none;\n}\nblockquote:before, blockquote:after,\nq:before, q:after {\n\tcontent: '';\n\tcontent: none;\n}\ntable {\n\tborder-collapse: collapse;\n\tborder-spacing: 0;\n}\n\n/**\n * FONTS\n */\n\n@font-face {\n  font-family: 'Silkscreen Web';\n  src: url(" + __webpack_require__(1) + ");\n  src: url(" + __webpack_require__(1) + "?#iefix) format('embedded-opentype'),\n    url(" + __webpack_require__(13) + ") format('woff'),\n    url(" + __webpack_require__(12) + ") format('truetype'),\n    url(" + __webpack_require__(11) + "#silkscreennormal) format('svg');\n  font-weight: normal;\n  font-style: normal;\n}\n\n/**\n * GAME\n */\n\nhtml {\n  font-size: 16px;\n}\n\nbody {\n  align-items: center;\n  display: flex;\n  font-family: 'Silkscreen Web', monotype;\n  height: 100vh;\n  justify-content: center;\n  width: 100%;\n}\n\nh1 {\n  font-size: 2.5rem;\n  margin-bottom: 1rem; \n  text-align: center;\n}\n\n", ""]);
+exports.push([module.i, "/* http://meyerweb.com/eric/tools/css/reset/ \n   v2.0 | 20110126\n   License: none (public domain)\n*/\n\nhtml, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed, \nfigure, figcaption, footer, header, hgroup, \nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n\tmargin: 0;\n\tpadding: 0;\n\tborder: 0;\n\tfont-size: 100%;\n\tfont: inherit;\n\tvertical-align: baseline;\n}\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure, \nfooter, header, hgroup, menu, nav, section {\n\tdisplay: block;\n}\nbody {\n\tline-height: 1;\n}\nol, ul {\n\tlist-style: none;\n}\nblockquote, q {\n\tquotes: none;\n}\nblockquote:before, blockquote:after,\nq:before, q:after {\n\tcontent: '';\n\tcontent: none;\n}\ntable {\n\tborder-collapse: collapse;\n\tborder-spacing: 0;\n}\n\n/**\n * FONTS\n */\n\n@font-face {\n  font-family: 'Silkscreen Web';\n  src: url(" + __webpack_require__(1) + ");\n  src: url(" + __webpack_require__(1) + "?#iefix) format('embedded-opentype'),\n    url(" + __webpack_require__(13) + ") format('woff'),\n    url(" + __webpack_require__(12) + ") format('truetype'),\n    url(" + __webpack_require__(11) + "#silkscreennormal) format('svg');\n  font-weight: normal;\n  font-style: normal;\n}\n\n/**\n * GAME\n */\n\nhtml {\n  font-size: 16px;\n}\n\n\nbody {\n  align-items: center;\n  display: flex;\n  font-family: 'Silkscreen Web', monotype;\n  height: 100vh;\n  justify-content: center;\n  width: 100%;\n  background-color: grey;\n}\n\nh1 {\n  font-size: 2.5rem;\n  margin-bottom: 1rem; \n  text-align: center;\n}\n\n.controls {\n  display: flex; \n  flex-wrap: wrap;\n}\n\n.controls h2 {\n  flex-basis: 100%;\n  text-align: center;\n  font-size: 2rem;\n  height: 40px;\n}\n\n.controls div {\n  flex-basis: 50%;\n}", ""]);
 
 // exports
 
